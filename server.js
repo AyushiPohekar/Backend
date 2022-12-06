@@ -1,4 +1,6 @@
 const express=require("express");
+const errorMiddleware=require("./middleware/error")
+const product=require("./routes/productRoute")
 
 const dotenv=require("dotenv");
 dotenv.config();
@@ -10,14 +12,30 @@ const PORT1=process.env.PORT;
 
 app.use(express.json());
 
-const product=require("./routes/productRoute")
+
 
 app.use("/api/v1",product)
+
+app.use(errorMiddleware);
 
 app.get("/",function(request,response){
     response.send("hello World");
 })
 
+const server=app.listen(PORT1,()=>console.log(`App is started in ${PORT1}`))
+
+// Unhandled Promise Rejection
+process.on("unhandledRejection", (err) => {
+    console.log(`Error: ${err.message}`);
+    console.log(`Shutting down the server due to Unhandled Promise Rejection`);
+  
+    server.close(() => {
+      process.exit(1);
+    });
+  });
 
 
-app.listen(PORT1,()=>console.log(`App is started in ${PORT1}`))
+
+
+
+
